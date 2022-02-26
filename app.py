@@ -40,13 +40,38 @@ async def on_raw_reaction_add(payload):
                 print("Member Not Found")
         else:
             print("Role Not Found")
-
+    if message_id == 947278394712797224:
+        guild_id = payload.guild_id
+        guild = discord.utils.find(lambda g: g.id == guild_id, client.guilds)
+        role = discord.utils.get(guild.roles, name=payload.emoji.name)
+        if role is not None:
+            member = payload.member
+            if member is not None:
+                await member.add_roles(role)
+                print("Role Added")
+            else:
+                print("Member Not Found")
+        else:
+            print("Role Not Found")
 
 # Remove role based on Emoji Name - - Emoji name and Role name MUST MATCH
 @client.event
 async def on_raw_reaction_remove(payload):
     message_id = payload.message_id
     if message_id == 829753852894773248:
+        guild_id = payload.guild_id
+        guild = discord.utils.find(lambda g: g.id == guild_id, client.guilds)
+        role = discord.utils.get(guild.roles, name=payload.emoji.name)
+        if role is not None:
+            member = guild.get_member(payload.user_id)
+            if member is not None:
+                await member.remove_roles(role)
+                print("Role Removed")
+            else:
+                print("Member Not Found")
+        else:
+            print("Role Not Found")
+    if message_id == 947278394712797224:
         guild_id = payload.guild_id
         guild = discord.utils.find(lambda g: g.id == guild_id, client.guilds)
         role = discord.utils.get(guild.roles, name=payload.emoji.name)
