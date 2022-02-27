@@ -1,10 +1,10 @@
 # Load packages
 import discord
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 import os
 
 # Credentials
-load_dotenv('.env')
+#load_dotenv('.env')
 
 # Grant necessary intents to see reactions/member list
 intents = discord.Intents.default()
