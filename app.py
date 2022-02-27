@@ -27,7 +27,7 @@ async def on_ready():
 async def on_raw_reaction_add(payload):
     message_id = payload.message_id
     # Change Message ID to the ID of the message you want the bot to look at
-    if message_id == 829753852894773248:
+    if message_id == 829823580099182612:
         guild_id = payload.guild_id
         guild = discord.utils.find(lambda g: g.id == guild_id, client.guilds)
         role = discord.utils.get(guild.roles, name=payload.emoji.name)
@@ -58,7 +58,7 @@ async def on_raw_reaction_add(payload):
 @client.event
 async def on_raw_reaction_remove(payload):
     message_id = payload.message_id
-    if message_id == 829753852894773248:
+    if message_id == 829823580099182612:
         guild_id = payload.guild_id
         guild = discord.utils.find(lambda g: g.id == guild_id, client.guilds)
         role = discord.utils.get(guild.roles, name=payload.emoji.name)
