@@ -5,3 +5,5 @@
 
 #ignore this file
 *.env
+venv
+.venv
