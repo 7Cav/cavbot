@@ -1,8 +1,9 @@
 # Load packages
-import discord
-
-# from dotenv import load_dotenv
 import os
+
+import discord
+from discord import app_commands
+from discord.ext import commands
 
 # Credentials
 # load_dotenv('.env')
@@ -12,14 +13,90 @@ intents = discord.Intents.default()
 intents.reactions = True
 intents.members = True
 client = discord.Client(intents=intents)
+tree = app_commands.CommandTree(client)
 # Sets status text and type (1=playing, 2=listening, 3=watching)
 status = discord.Activity(name="https://7cav.us", type=3)
+
+
+def can_manage_reps():
+    return app_commands.checks.has_any_role("Arma3", "Cutie")
+
+
+@tree.error
+async def on_command_error(
+    interaction: discord.Interaction, error: discord.app_commands.AppCommandError
+) -> None:
+    if isinstance(error, app_commands.errors.MissingAnyRole):
+        await interaction.response.send_message(
+            f"You must have one of these roles: `{error.missing_roles}` in order to use this command",
+            ephemeral=True,
+        )
+    elif isinstance(error, app_commands.errors.AppCommandError):
+        await interaction.response.send_message(
+            f"```{error.original}```Please ensure you are typing the name of a member who is currently \
+on this server. This is easiest if you use a mention, otherwise it is case sensitive. If you need further \
+help open an S6 Ticket.",
+            ephemeral=True,
+        )
+    else:
+        sypolt = await client.fetch_user(130158049968128000)
+        await sypolt.send(
+            f"Someone broke your shit, it was probably liber ```{error}```"
+        )
+        await interaction.response.send_message(
+            "You managed to break the bot in a way I didn't expect, good job. If the cav \
+had an Army Bug Finder medal I'd give it to you. Anyway the error was forwarded to me, Sypolt.R. \
+Why don't you try whatever that was again but better this time?",
+            ephemeral=True,
+        )
+
+
+# Create repadd command
+@tree.command(
+    name="add_clan_rep",
+    description="For S5 Members to Add Clan Reps",
+    guild=discord.Object(id=654549694789320706),
+)
+@can_manage_reps()
+async def clan_rep_add(interaction, target: str):
+    member = await commands.MemberConverter().convert(interaction.user, target)
+    role = discord.utils.get(interaction.guild.roles, id=897326224983089173)
+    if role in member.roles:
+        await interaction.response.send_message(
+            f"{member.mention} already has the role {role.mention}", ephemeral=True
+        )
+    else:
+        await interaction.response.send_message(
+            f"{role.mention} added to {member.mention}", ephemeral=True
+        )
+        await member.add_roles(discord.Object(897326224983089173))
+
+
+@tree.command(
+    name="remove_clan_rep",
+    description="For S5 Members to Remove Clan Reps",
+    guild=discord.Object(id=654549694789320706),
+)
+@can_manage_reps()
+async def clan_rep_remove(interaction, target: str):
+    member = await commands.MemberConverter().convert(interaction.user, target)
+    role = discord.utils.get(interaction.guild.roles, id=897326224983089173)
+    if role not in member.roles:
+        await interaction.response.send_message(
+            f"{member.mention} doesn't have the role {role.mention}", ephemeral=True
+        )
+    else:
+        await interaction.response.send_message(
+            f"{role.mention} removed from {member.mention}", ephemeral=True
+        )
+        await member.remove_roles(discord.Object(897326224983089173))
 
 
 # Output success message when connected and add status
 @client.event
 async def on_ready():
     await client.change_presence(activity=status)
+    await tree.sync(guild=discord.Object(id=654549694789320706))
     print("Bot ready")
 
 
