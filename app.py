@@ -51,13 +51,15 @@ for var, error_msg in env_vars.items():
 main_guild_id = os.environ.get("GUILD_ID")
 
 
-@tree.command(
-    name="restart",
-    description="Restarts/Updates the selected Arma Server",
-    guild=discord.Object(id=main_guild_id),
-)  # Add the guild ids in which the slash command will appear. If it should be in all, remove the argument, but note that it will take some time (up to an hour) to register the command if it's for all guilds.
-async def restart(interaction):
-    await interaction.response.send_message("Hello!")
+# Set the ptero_api variable to the Pterodactyl API key stored in the PTERO_API environment variable
+# This environment variable is used to configure the Pterodactyl API key
+ptero_api = os.environ.get("PTERO_API")
+
+
+server_list = os.environ.get("SERVERS")
+SERVERS = {
+    server.split(":")[0]: server.split(":")[1] for server in server_list.split(",")
+}
 
 
 @client.event
