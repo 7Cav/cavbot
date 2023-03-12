@@ -2,55 +2,36 @@
 import os
 
 import discord
-from discord import app_commands
-from discord.ext import commands
 
-# Credentials
-# load_dotenv('.env')
-
-# Grant necessary intents to see reactions/member list
+# Create a new Intents object with the default intents
 intents = discord.Intents.default()
+
+# Enable the intents to see reactions and members
 intents.reactions = True
 intents.members = True
+
+# Create a new Client object with the specified intents
 client = discord.Client(intents=intents)
-tree = app_commands.CommandTree(client)
-# Sets status text and type (1=playing, 2=listening, 3=watching)
+
+# Set the bot's status to a custom message
+# The Activity object takes a name and a type parameter
+# The type can be set to 1 (playing), 2 (listening), or 3 (watching)
 status = discord.Activity(name="https://7cav.us", type=3)
 
 
-def can_manage_reps():
-    return app_commands.checks.has_any_role(
-        "S5 - Public Relations", "General Staff", "Administrator"
-    )
+@client.event
+async def on_ready():
+    """
+    This function is called when the bot is connected to Discord and ready to receive messages.
 
+    It sets the bot's status to the value of the `status` variable and prints a message to the console
+    indicating that the bot is ready.
+    """
+    # Set the bot's activity status to the value of the `status` variable
+    await client.change_presence(activity=status)
 
-@tree.error
-async def on_command_error(
-    interaction: discord.Interaction, error: discord.app_commands.AppCommandError
-) -> None:
-    if isinstance(error, app_commands.errors.MissingAnyRole):
-        await interaction.response.send_message(
-            f"You must have one of these roles: `{error.missing_roles}` in order to use this command",
-            ephemeral=True,
-        )
-    elif isinstance(error, app_commands.errors.AppCommandError):
-        await interaction.response.send_message(
-            f"```{error.original}```Please ensure you are typing the name of a member who is currently \
-on this server. This is easiest if you use a mention, otherwise it is case sensitive. If you need further \
-help open an S6 Ticket.",
-            ephemeral=True,
-        )
-    else:
-        sypolt = await client.fetch_user(130158049968128000)
-        await sypolt.send(
-            f"Someone broke your bot, it was probably liber ```{error}```"
-        )
-        await interaction.response.send_message(
-            "You managed to break the bot in a way I didn't expect, good job. If the Cav \
-had an Army Bug Finder medal I'd give it to you. Anyway the error was forwarded to me, Sypolt.R. \
-Why don't you try whatever that was again but with less breaking things this time?",
-            ephemeral=True,
-        )
+    # Print a message to the console indicating that the bot is ready
+    print("Bot ready")
 
 
 @client.event
@@ -127,5 +108,7 @@ async def update_role(payload, add_role):
 
 
 # Bot Token
+# Set the token variable to the bot token from the environment variables
 token = client.run(os.getenv("BOT_TOKEN"))
+# Run the client with the token
 client.run(token)
