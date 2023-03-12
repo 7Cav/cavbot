@@ -1,3 +1,9 @@
+# This script requires the following environment variables to be set:
+# - MESSAGE_IDS: A comma-separated list of message IDs to monitor for reactions
+# - BOT_TOKEN: The API token for your Discord bot
+# - GUILD_ID: The ID of the Discord guild the bot will operate in
+# - PTERO_API: The API key for your Pterodactyl instance
+
 # Load packages
 import os
 
