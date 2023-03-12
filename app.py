@@ -25,6 +25,16 @@ status = discord.Activity(name="https://7cav.us", type=3)
 # Set the main_guild_id variable to the bot token from the environment variables
 main_guild_id = os.environ.get("GUILD_ID")
 
+
+@tree.command(
+    name="restart",
+    description="Restarts/Updates the selected Arma Server",
+    guild=discord.Object(id=main_guild_id),
+)  # Add the guild ids in which the slash command will appear. If it should be in all, remove the argument, but note that it will take some time (up to an hour) to register the command if it's for all guilds.
+async def restart(interaction):
+    await interaction.response.send_message("Hello!")
+
+
 @client.event
 async def on_ready():
     """
