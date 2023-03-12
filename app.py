@@ -53,116 +53,75 @@ Why don't you try whatever that was again but with less breaking things this tim
         )
 
 
-# Create repadd command
-@tree.command(
-    name="add_clan_rep",
-    description="For S5 Members to Add Clan Reps",
-    guild=discord.Object(id=109869242148491264),
-)
-@can_manage_reps()
-async def clan_rep_add(interaction, target: str):
-    member = await commands.MemberConverter().convert(interaction.user, target)
-    role = discord.utils.get(interaction.guild.roles, id=1080062973483163742)
-    if role in member.roles:
-        await interaction.response.send_message(
-            f"{member.mention} already has the role {role.mention}", ephemeral=True
-        )
-    else:
-        await interaction.response.send_message(
-            f"{role.mention} added to {member.mention}", ephemeral=True
-        )
-        await member.add_roles(discord.Object(1080062973483163742))
-
-
-@tree.command(
-    name="remove_clan_rep",
-    description="For S5 Members to Remove Clan Reps",
-    guild=discord.Object(id=109869242148491264),
-)
-@can_manage_reps()
-async def clan_rep_remove(interaction, target: str):
-    member = await commands.MemberConverter().convert(interaction.user, target)
-    role = discord.utils.get(interaction.guild.roles, id=1080062973483163742)
-    if role not in member.roles:
-        await interaction.response.send_message(
-            f"{member.mention} doesn't have the role {role.mention}", ephemeral=True
-        )
-    else:
-        await interaction.response.send_message(
-            f"{role.mention} removed from {member.mention}", ephemeral=True
-        )
-        await member.remove_roles(discord.Object(1080062973483163742))
-
-
-# Output success message when connected and add status
-@client.event
-async def on_ready():
-    await client.change_presence(activity=status)
-    await tree.sync(guild=discord.Object(id=109869242148491264))
-    print("Bot ready")
-
-
-# Add role based on Emoji Name - - Emoji name and Role name MUST MATCH
 @client.event
 async def on_raw_reaction_add(payload):
-    message_id = payload.message_id
-    # Change Message ID to the ID of the message you want the bot to look at
-    if message_id == 829823580099182612:
-        guild_id = payload.guild_id
-        guild = discord.utils.find(lambda g: g.id == guild_id, client.guilds)
-        role = discord.utils.get(guild.roles, name=payload.emoji.name)
-        if role is not None:
-            member = payload.member
-            if member is not None:
-                await member.add_roles(role)
-                print("Role Added")
-            else:
-                print("Member Not Found")
-        else:
-            print("Role Not Found")
-    if message_id == 947278394712797224:
-        guild_id = payload.guild_id
-        guild = discord.utils.find(lambda g: g.id == guild_id, client.guilds)
-        role = discord.utils.get(guild.roles, name=payload.emoji.name)
-        if role is not None:
-            member = payload.member
-            if member is not None:
-                await member.add_roles(role)
-                print("Role Added")
-            else:
-                print("Member Not Found")
-        else:
-            print("Role Not Found")
+    """
+    Event triggered when a user reacts to a message with an emoji.
+
+    If the message ID is in the specified list of message IDs, the function attempts to add a role to the user.
+
+    Parameters:
+        payload (discord.RawReactionActionEvent): The raw reaction event.
+
+    Returns:
+        None
+    """
+    await update_role(payload, True)
 
 
-# Remove role based on Emoji Name - - Emoji name and Role name MUST MATCH
 @client.event
 async def on_raw_reaction_remove(payload):
+    """
+    Event triggered when a user removes a reaction from a message with an emoji.
+
+    If the message ID is in the specified list of message IDs, the function attempts to remove a role from the user.
+
+    Parameters:
+        payload (discord.RawReactionActionEvent): The raw reaction event.
+
+    Returns:
+        None
+    """
+    await update_role(payload, False)
+
+
+async def update_role(payload, add_role):
+    """
+    Attempts to add or remove a role to/from the user based on the provided payload and flag.
+
+    If the message ID is in the specified list of message IDs, the function attempts to add or remove a role to/from the user
+    based on the provided flag.
+
+    Parameters:
+        payload (discord.RawReactionActionEvent): The raw reaction event.
+        add_role (bool): Flag indicating whether to add or remove the role.
+
+    Returns:
+        None
+    """
+    message_ids = os.environ.get("MESSAGE_IDS")
+    message_ids_list = [int(id) for id in message_ids.split(",")]
     message_id = payload.message_id
-    if message_id == 829823580099182612:
+
+    # Check if the message ID is in the specified list of message IDs
+    if message_id in message_ids_list:
         guild_id = payload.guild_id
         guild = discord.utils.find(lambda g: g.id == guild_id, client.guilds)
+
+        # Get the role associated with the emoji
         role = discord.utils.get(guild.roles, name=payload.emoji.name)
+
+        # If the role is found, try to add/remove it to/from the user
         if role is not None:
             member = guild.get_member(payload.user_id)
-            if member is not None:
+            if member is None:
+                print("Member Not Found")
+            elif add_role:
+                await member.add_roles(role)
+                print("Role Added")
+            else:
                 await member.remove_roles(role)
                 print("Role Removed")
-            else:
-                print("Member Not Found")
-        else:
-            print("Role Not Found")
-    if message_id == 947278394712797224:
-        guild_id = payload.guild_id
-        guild = discord.utils.find(lambda g: g.id == guild_id, client.guilds)
-        role = discord.utils.get(guild.roles, name=payload.emoji.name)
-        if role is not None:
-            member = guild.get_member(payload.user_id)
-            if member is not None:
-                await member.remove_roles(role)
-                print("Role Removed")
-            else:
-                print("Member Not Found")
         else:
             print("Role Not Found")
 
