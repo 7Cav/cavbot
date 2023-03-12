@@ -2,6 +2,7 @@
 import os
 
 import discord
+from discord import app_commands
 
 # Create a new Intents object with the default intents
 intents = discord.Intents.default()
