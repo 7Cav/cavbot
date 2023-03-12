@@ -33,6 +33,8 @@ async def on_ready():
     """
     # Set the bot's activity status to the value of the `status` variable
     await client.change_presence(activity=status)
+    
+    await tree.sync(guild=discord.Object(id=654549694789320706))
 
     # Print a message to the console indicating that the bot is ready
     print("Bot ready")
