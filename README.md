@@ -1,7 +1,12 @@
 ## CavBot
-Discord Role Bot for =7Cav=
 
-# Set up .env file 
+General Discord Bot for =7Cav=
+
+# Set up .env file
+
+```env
 BOT_TOKEN=[token]
+MESSAGE_IDS=[message ids to watch]
+```
 
-uses python-dotenv, discord.py
+See `requirements.txt` for requirements
