@@ -14,6 +14,9 @@ intents.members = True
 # Create a new Client object with the specified intents
 client = discord.Client(intents=intents)
 
+# Create a new CommandTree object for registering slash commands
+tree = app_commands.CommandTree(client)
+
 # Set the bot's status to a custom message
 # The Activity object takes a name and a type parameter
 # The type can be set to 1 (playing), 2 (listening), or 3 (watching)
