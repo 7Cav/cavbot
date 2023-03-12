@@ -22,6 +22,8 @@ tree = app_commands.CommandTree(client)
 # The type can be set to 1 (playing), 2 (listening), or 3 (watching)
 status = discord.Activity(name="https://7cav.us", type=3)
 
+# Set the main_guild_id variable to the bot token from the environment variables
+main_guild_id = os.environ.get("GUILD_ID")
 
 @client.event
 async def on_ready():
@@ -34,7 +36,7 @@ async def on_ready():
     # Set the bot's activity status to the value of the `status` variable
     await client.change_presence(activity=status)
     
-    await tree.sync(guild=discord.Object(id=654549694789320706))
+    await tree.sync(guild=discord.Object(id=main_guild_id))
 
     # Print a message to the console indicating that the bot is ready
     print("Bot ready")
