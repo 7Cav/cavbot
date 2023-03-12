@@ -31,7 +31,23 @@ tree = app_commands.CommandTree(client)
 # The type can be set to 1 (playing), 2 (listening), or 3 (watching)
 status = discord.Activity(name="https://7cav.us", type=3)
 
-# Set the main_guild_id variable to the bot token from the environment variables
+
+env_vars = {
+    "GUILD_ID": "No guild ID found in environment variable GUILD_ID\nPlease add a guild ID to the environment variable GUILD_ID",
+    "PTERO_API": "No Pterodactyl API key found in environment variable PTERO_API\nPlease add a Pterodactyl API key to the environment variable PTERO_API",
+    "SERVERS": "No servers found in environment variable SERVERS\nPlease add servers in the format of server1:server1_id,server2:server2_id",
+    "BOT_TOKEN": "No bot token found in environment variable BOT_TOKEN\nPlease add a bot token to the environment variable BOT_TOKEN",
+    "MESSAGE_IDS": "No message IDs found in environment variable MESSAGE_IDS\nPlease add a comma-separated list of message IDs to the environment variable MESSAGE_IDS",
+}
+
+for var, error_msg in env_vars.items():
+    value = os.environ.get(var)
+    if value is None:
+        print(error_msg)
+        exit(1)
+
+# Set the main_guild_id variable to the guild ID stored in the GUILD_ID environment variable
+# This environment variable is used to configure which guild the bot should operate in
 main_guild_id = os.environ.get("GUILD_ID")
 
 
