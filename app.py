@@ -72,11 +72,37 @@ async def on_ready():
     """
     # Set the bot's activity status to the value of the `status` variable
     await client.change_presence(activity=status)
-    
+
     await tree.sync(guild=discord.Object(id=main_guild_id))
 
     # Print a message to the console indicating that the bot is ready
     print("Bot ready")
+
+
+@tree.command(
+    name="restart",
+    description="Restarts/Updates the selected Arma Server",
+    guild=discord.Object(id=main_guild_id),
+)
+
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            f"https://panel.7cav.us/api/application/servers/{server_id}/power",
+            headers={
+                "Authorization": f"Bearer {ptero_api}",
+                "Content-Type": "application/json",
+                "Accept": "Application/vnd.pterodactyl.v1+json",
+            },
+            json={"command": "restart"},
+            timeout=10,
+        ) as response:
+            if response.status == 204:
+                await interaction.followup.send("Server restarting...")
+            else:
+                await interaction.followup.send(
+                    "Something went wrong, please try again later."
+                )
 
 
 @client.event
